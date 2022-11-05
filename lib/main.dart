@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:segment_display/segment_display.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +20,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 67, 61, 61),
-      ),
+          // scaffoldBackgroundColor: const Color.fromARGB(255, 67, 61, 61),
+          ),
       home: const MyHomePage(),
     );
   }
@@ -36,9 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Color.fromARGB(255, 67, 61, 61),
+      backgroundColor: const Color.fromARGB(255, 67, 61, 61),
       body: Row(
-        // mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(
             width: 30,
@@ -49,33 +49,40 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               Row(
                 children: [
-                  MaterialButton(
-                    onPressed: () {},
-                    child: const Text('Coco'),
+                  SizedBox(
+                    height: 70,
+                    width: 70,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        side: const BorderSide(width: 2),
+                        backgroundColor: const Color.fromARGB(255, 48, 182, 97),
+                      ),
+                      onPressed: () {},
+                      child: const Text(''),
+                    ),
                   ),
-                  // const SizedBox(
-                  //   height: 70,
-                  //   width: 70,
-                  //   child: DecoratedBox(
-                  //     decoration: BoxDecoration(
-                  //         color: Color.fromARGB(255, 48, 182, 97)),
-                  //   ),
-                  // ),
                   const SizedBox(
                     width: 30,
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text('Coco'),
+                  SizedBox(
+                    height: 70,
+                    width: 70,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        side: const BorderSide(width: 2),
+                        backgroundColor:
+                            const Color.fromARGB(255, 208, 183, 153),
+                      ),
+                      onPressed: () {},
+                      child: const Text(''),
+                    ),
                   ),
-                  // SizedBox(
-                  //   height: 70,
-                  //   width: 70,
-                  //   child: DecoratedBox(
-                  //     decoration: BoxDecoration(
-                  //         color: Color.fromARGB(255, 208, 183, 153)),
-                  //   ),
-                  // ),
                 ],
               ),
               const SizedBox(
@@ -83,45 +90,40 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Row(
                 children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Coco'),
-                  ),
-                  // const SizedBox(
-                  //   height: 70,
-                  //   width: 70,
-                  //   child: DecoratedBox(
-                  //     decoration: BoxDecoration(
-                  //         color: Color.fromARGB(255, 208, 183, 153)),
-                  //   ),
-                  // ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  // OutlinedButton(
-                  //   style: OutlinedButton.styleFrom(
-                  //     backgroundColor:
-                  //         Color.fromARGB(255, 208, 183, 153), //<-- SEE HERE
-                  //   ),
-
-                  //   onPressed: () {},
-                  //   child: const Text('Coco'),
-                  // ),
                   SizedBox(
                     height: 70,
                     width: 70,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        side: const BorderSide(width: 2),
                         backgroundColor:
-                            Color.fromARGB(255, 208, 183, 153), //<-- SEE HERE
+                            const Color.fromARGB(255, 208, 183, 153),
                       ),
                       onPressed: () {},
-                      child: const Text('Coco'),
+                      child: const Text(''),
                     ),
-                    // DecoratedBox(
-                    //   decoration: BoxDecoration(
-                    //       color: Color.fromARGB(255, 208, 183, 153)),
-                    // ),
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  SizedBox(
+                    height: 70,
+                    width: 70,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        side: const BorderSide(width: 2),
+                        backgroundColor:
+                            const Color.fromARGB(255, 208, 183, 153),
+                      ),
+                      onPressed: () {},
+                      child: const Text(''),
+                    ),
                   ),
                 ],
               ),
@@ -131,12 +133,21 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 60,
           ),
           // bloc 2: counter
-          const SizedBox(
+          Container(
             height: 200,
             width: 400,
-            child: DecoratedBox(
-              decoration: BoxDecoration(color: Colors.red),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 0, 0, 0),
             ),
+            child: const Center(
+              child: SevenSegmentDisplay(
+                value: "123",
+                size: 12.0,
+              ),
+            ),
+            // DecoratedBox(
+            //   decoration: BoxDecoration(color: Colors.red),
+            // ),
           ),
           Expanded(child: Container()),
           // bloc 3: ad
