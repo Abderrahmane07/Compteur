@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:segment_display/segment_display.dart';
@@ -9,6 +11,7 @@ void main() {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+
   runApp(const MyApp());
 }
 
@@ -34,8 +37,107 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final tempsInitial = DateTime.now();
+  Timer? timer;
+  String temps = "coco";
+  Stopwatch stopwatch = Stopwatch();
+
+  void leftButtonPressed() {
+    setState(() {
+      if (stopwatch.isRunning) {
+        print("${stopwatch.elapsedMilliseconds}");
+      } else {
+        stopwatch.reset();
+      }
+    });
+  }
+
+  void rightButtonPressed() {
+    setState(() {
+      if (stopwatch.isRunning) {
+        stopwatch.stop();
+      } else {
+        stopwatch.start();
+      }
+    });
+  }
+
+  void prixSelontemps() {
+    setState(() {
+      var tempsTempo = DateTime.now();
+      int difference = tempsTempo.difference(tempsInitial).inSeconds;
+      // updateState();
+      timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        difference++;
+        temps = difference.toString();
+      });
+    });
+  }
+  // int seconds = 0, minutes = 0, hours = 0;
+  // String digitSeconds = "00", digitMinutes = "00", digitHours = "00";
+  // Timer? timer;
+  // bool started = false;
+  // List laps = [];
+
+  // void stop() {
+  //   timer!.cancel();
+  //   setState(() {
+  //     started = false;
+  //   });
+  // }
+
+  // void reset() {
+  //   timer!.cancel();
+  //   setState(() {
+  //     seconds = 0;
+  //     minutes = 0;
+  //     hours = 0;
+
+  //     digitSeconds = "00";
+  //     digitMinutes = "00";
+  //     digitHours = "00";
+
+  //     started = false;
+  //   });
+  // }
+
+  // void addLaps() {
+  //   String lap = "$digitHours:$digitMinutes:$digitSeconds";
+  //   setState(() {
+  //     laps.add(lap);
+  //   });
+  // }
+
+  // void start() {
+  //   started = true;
+  //   timer = Timer.periodic(Duration(seconds: 1), (timer) {
+  //     int localSeconds = seconds + 1;
+  //     int localMinutes = minutes;
+  //     int localHours = hours;
+
+  //     if (localSeconds > 59) {
+  //       if (localMinutes > 59) {
+  //         localHours++;
+  //         localMinutes = 0;
+  //       } else {
+  //         localMinutes++;
+  //         localSeconds = 0;
+  //       }
+  //     }
+  //     setState(() {
+  //       seconds = localSeconds;
+  //       minutes = localMinutes;
+  //       hours = localHours;
+  //       digitSeconds = (seconds >= 10) ? "$seconds" : "0$seconds";
+  //       digitSeconds = (minutes >= 10) ? "$minutes" : "0$minutes";
+  //       digitSeconds = (hours >= 10) ? "$hours" : "0$hours";
+  //     });
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
+    prixSelontemps();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 67, 61, 61),
       body: Row(
@@ -60,7 +162,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         side: const BorderSide(width: 2),
                         backgroundColor: const Color.fromARGB(255, 48, 182, 97),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        rightButtonPressed();
+                      },
                       child: const Text(''),
                     ),
                   ),
@@ -79,7 +183,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         backgroundColor:
                             const Color.fromARGB(255, 208, 183, 153),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        leftButtonPressed();
+                      },
                       child: const Text(''),
                     ),
                   ),
@@ -139,11 +245,15 @@ class _MyHomePageState extends State<MyHomePage> {
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 0, 0, 0),
             ),
-            child: const Center(
+            child: Center(
               child: SevenSegmentDisplay(
-                value: "123",
+                value: temps,
                 size: 12.0,
               ),
+              // SevenSegmentDisplay(
+              //   value: "123",
+              //   size: 12.0,
+              // ),
             ),
             // DecoratedBox(
             //   decoration: BoxDecoration(color: Colors.red),
@@ -155,7 +265,8 @@ class _MyHomePageState extends State<MyHomePage> {
             height: MediaQuery.of(context).size.height,
             width: 70,
             child: const DecoratedBox(
-              decoration: BoxDecoration(color: Color.fromARGB(255, 0, 34, 255)),
+              decoration:
+                  BoxDecoration(color: Color.fromARGB(255, 153, 153, 153)),
             ),
           ),
         ],
