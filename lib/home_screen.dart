@@ -13,54 +13,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int timeFirstClient = 5;
-
-  void _startCountDown() {
+  bool isLaunched = false;
+  void _startOrResetCountDown() {
     Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        timeFirstClient++;
+        if (isLaunched) {
+          timeFirstClient++;
+        } else {
+          timeFirstClient = 5;
+          timer.cancel();
+          isLaunched = false;
+        }
       });
     });
   }
-  // final tempsInitial = DateTime.now();
-  // Timer? timer;
-  // String temps = "coco";
-  // Stopwatch stopwatch = Stopwatch();
-
-  // void leftButtonPressed() {
-  //   setState(() {
-  //     if (stopwatch.isRunning) {
-  //       print("${stopwatch.elapsedMilliseconds}");
-  //     } else {
-  //       stopwatch.reset();
-  //     }
-  //   });
-  // }
-
-  // void rightButtonPressed() {
-  //   setState(() {
-  //     if (stopwatch.isRunning) {
-  //       stopwatch.stop();
-  //     } else {
-  //       stopwatch.start();
-  //     }
-  //   });
-  // }
-
-  // void prixSelontemps() {
-  //   setState(() {
-  //     var tempsTempo = DateTime.now();
-  //     int difference = tempsTempo.difference(tempsInitial).inSeconds;
-  //     // updateState();
-  //     timer = Timer.periodic(Duration(seconds: 1), (timer) {
-  //       difference++;
-  //       temps = difference.toString();
-  //     });
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
-    // prixSelontemps();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 67, 61, 61),
       body: Row(
@@ -86,8 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         backgroundColor: const Color.fromARGB(255, 48, 182, 97),
                       ),
                       onPressed: () {
-                        _startCountDown();
-                        // rightButtonPressed();
+                        isLaunched = !isLaunched;
+                        _startOrResetCountDown();
                       },
                       child: const Text(''),
                     ),
@@ -107,9 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         backgroundColor:
                             const Color.fromARGB(255, 208, 183, 153),
                       ),
-                      onPressed: () {
-                        // leftButtonPressed();
-                      },
+                      onPressed: () {},
                       child: const Text(''),
                     ),
                   ),
