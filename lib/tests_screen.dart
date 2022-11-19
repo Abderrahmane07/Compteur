@@ -31,6 +31,16 @@ class _TestsScreenState extends State<TestsScreen> {
               timeLeft.toString(),
               style: const TextStyle(fontSize: 40),
             ),
+            Container(
+              //margin: EdgeInsets.all(100.0),
+              width: 100.0,
+              height: 100.0,
+              // color: Colors.red,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+            ),
             MaterialButton(
                 onPressed: _startCountDown,
                 // ignore: sort_child_properties_last

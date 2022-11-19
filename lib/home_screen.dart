@@ -142,17 +142,46 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 0, 0, 0),
             ),
-            // ignore: prefer_const_constructors
-            child: Center(
-              // ignore: prefer_const_constructors
-              child: SevenSegmentDisplay(
-                value: timeFirstClient.toString(),
-                size: 12.0,
-              ),
-              // SevenSegmentDisplay(
-              //   value: "123",
-              //   size: 12.0,
-              // ),
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 30,
+                ),
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const SevenSegmentDisplay(
+                      value: "2",
+                      size: 5.0,
+                    ),
+                    const SizedBox(
+                      height: 70,
+                    ),
+                    Container(
+                      width: 20.0,
+                      height: 20.0,
+                      decoration: const BoxDecoration(
+                          color: Colors.red, shape: BoxShape.circle),
+                    ),
+                  ],
+                ),
+                Expanded(child: Container()),
+                Center(
+                  child: SevenSegmentDisplay(
+                    value: "2.00", //timeFirstClient.toString(),
+                    size: 11.0,
+                  ),
+                  // SevenSegmentDisplay(
+                  //   value: "123",
+                  //   size: 12.0,
+                  // ),
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+              ],
             ),
           ),
           Expanded(child: Container()),
