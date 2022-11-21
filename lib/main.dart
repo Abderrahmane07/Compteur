@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:compeur/tests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:segment_display/segment_display.dart';
 
 import 'home_screen.dart';
 
@@ -31,7 +28,7 @@ class MyApp extends StatelessWidget {
       // home: const MyHomePage(),
       routes: {
         '/': (context) => HomeScreen(),
-        '/tests': (context) => TestsScreen(),
+        '/tests': (context) => const TestsScreen(),
       },
     );
   }

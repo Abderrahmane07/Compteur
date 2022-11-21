@@ -13,19 +13,47 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int clientOrder = 1;
-  List<int> listPriceForClients = [0, 1, 2];
-  int timeFirstClient = 5;
-  bool isLaunched = false;
+  List<int> priceForClientsList = [0, 1, 2];
+  // int timeFirstClient = 5;
+  List<bool> isLaunchedList = [false, false, false];
 
-  void _startOrResetCountDown() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
+  void _startOrResetCountDown1() {
+    Timer.periodic(Duration(seconds: 1), (timer1) {
       setState(() {
-        if (isLaunched) {
-          listPriceForClients[clientOrder - 1]++;
+        if (isLaunchedList[0]) {
+          priceForClientsList[0]++;
         } else {
-          listPriceForClients[clientOrder - 1] = 0;
-          timer.cancel();
-          isLaunched = false;
+          timer1.cancel();
+          priceForClientsList[0] = 0;
+          isLaunchedList[0] = false;
+        }
+      });
+    });
+  }
+
+  void _startOrResetCountDown2() {
+    Timer.periodic(Duration(seconds: 1), (timer2) {
+      setState(() {
+        if (isLaunchedList[1]) {
+          priceForClientsList[1]++;
+        } else {
+          timer2.cancel();
+          priceForClientsList[1] = 0;
+          isLaunchedList[1] = false;
+        }
+      });
+    });
+  }
+
+  void _startOrResetCountDown3() {
+    Timer.periodic(Duration(seconds: 1), (timer3) {
+      setState(() {
+        if (isLaunchedList[2]) {
+          priceForClientsList[2]++;
+        } else {
+          timer3.cancel();
+          priceForClientsList[2] = 0;
+          isLaunchedList[2] = false;
         }
       });
     });
@@ -70,8 +98,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         backgroundColor: const Color.fromARGB(255, 48, 182, 97),
                       ),
                       onPressed: () {
-                        isLaunched = !isLaunched;
-                        _startOrResetCountDown();
+                        isLaunchedList[clientOrder - 1] =
+                            !isLaunchedList[clientOrder - 1];
+                        if (clientOrder == 1) {
+                          _startOrResetCountDown1();
+                        } else if (clientOrder == 2) {
+                          _startOrResetCountDown2();
+                        } else {
+                          _startOrResetCountDown3();
+                        }
                       },
                       child: const Text(''),
                     ),
@@ -188,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(child: Container()),
                 Center(
                   child: SevenSegmentDisplay(
-                    value: listPriceForClients[clientOrder - 1].toString(),
+                    value: priceForClientsList[clientOrder - 1].toString(),
                     size: 11.0,
                   ),
                   // SevenSegmentDisplay(

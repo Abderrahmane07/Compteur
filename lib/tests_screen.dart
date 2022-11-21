@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class TestsScreen extends StatefulWidget {
-  TestsScreen({Key? key}) : super(key: key);
+  const TestsScreen({Key? key}) : super(key: key);
 
   @override
   State<TestsScreen> createState() => _TestsScreenState();
@@ -13,7 +13,7 @@ class _TestsScreenState extends State<TestsScreen> {
   int timeLeft = 5;
 
   void _startCountDown() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         timeLeft++;
       });
@@ -36,7 +36,7 @@ class _TestsScreenState extends State<TestsScreen> {
               width: 100.0,
               height: 100.0,
               // color: Colors.red,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.red,
                 shape: BoxShape.circle,
               ),
