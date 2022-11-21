@@ -14,7 +14,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int clientOrder = 1;
   List<int> priceForClientsList = [0, 1, 2];
-  // int timeFirstClient = 5;
+  List<double> finalPriceForClientsList = [0, 0, 0];
+  double chute = 0.20; // Tarif à payer par minute écoulée
+  bool isNightTarif = false;
   bool isOn = false;
   List<bool> isLaunchedList = [false, false, false];
 
@@ -26,9 +28,11 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         if (isLaunchedList[0]) {
           priceForClientsList[0]++;
+          finalPriceForClientsList[0] = chute * priceForClientsList[0];
         } else {
           timer1.cancel();
           priceForClientsList[0] = 0;
+          finalPriceForClientsList[0] = 0;
           isLaunchedList[0] = false;
         }
       });
@@ -40,9 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         if (isLaunchedList[1]) {
           priceForClientsList[1]++;
+          finalPriceForClientsList[1] = chute * priceForClientsList[1];
         } else {
           timer2.cancel();
           priceForClientsList[1] = 0;
+          finalPriceForClientsList[1] = 0;
           isLaunchedList[1] = false;
         }
       });
@@ -54,9 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         if (isLaunchedList[2]) {
           priceForClientsList[2]++;
+          finalPriceForClientsList[2] = chute * priceForClientsList[2];
         } else {
           timer3.cancel();
           priceForClientsList[2] = 0;
+          finalPriceForClientsList[2] = 0;
           isLaunchedList[2] = false;
         }
       });
@@ -80,8 +88,16 @@ class _HomeScreenState extends State<HomeScreen> {
       isLaunchedList = [false, false, false];
       priceForClientsList = [0, 1, 2];
       clientOrder = 1;
+      if (isNightTarif) {
+        switchToNightMode();
+      }
       isOn = !isOn;
     });
+  }
+
+  void switchToNightMode() {
+    isNightTarif = !isNightTarif;
+    isNightTarif ? chute = 0.3 : chute = 0.2;
   }
 
   @override
@@ -186,11 +202,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             const Color.fromARGB(255, 208, 183, 153),
                       ),
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => TestsScreen(),
-                          ),
-                        );
+                        switchToNightMode();
+                        // Navigator.of(context).push(
+                        //   MaterialPageRoute(
+                        //     builder: (context) => TestsScreen(),
+                        //   ),
+                        // );
                       },
                       child: const Text(''),
                     ),
@@ -229,19 +246,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(
                             height: 70,
                           ),
-                          Container(
-                            width: 20.0,
-                            height: 20.0,
-                            decoration: const BoxDecoration(
-                                color: Colors.red, shape: BoxShape.circle),
-                          ),
+                          isNightTarif
+                              ? Container(
+                                  width: 20.0,
+                                  height: 20.0,
+                                  decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle),
+                                )
+                              : Container(),
                         ],
                       ),
                       Expanded(child: Container()),
                       Center(
                         child: SevenSegmentDisplay(
-                          value: priceForClientsList[clientOrder - 1]
-                              .toString(), //" ${priceForClientsList[clientOrder - 1]}.00",
+                          value: finalPriceForClientsList[clientOrder - 1]
+                              .toStringAsFixed(
+                                  2), //" ${priceForClientsList[clientOrder - 1]}.00",
                           size: 11.0,
                         ),
                         // SevenSegmentDisplay(
