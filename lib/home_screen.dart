@@ -12,19 +12,34 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int clientOrder = 1;
+  List<int> listPriceForClients = [0, 1, 2];
   int timeFirstClient = 5;
   bool isLaunched = false;
+
   void _startOrResetCountDown() {
     Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (isLaunched) {
-          timeFirstClient++;
+          listPriceForClients[clientOrder - 1]++;
         } else {
-          timeFirstClient = 5;
+          listPriceForClients[clientOrder - 1] = 0;
           timer.cancel();
           isLaunched = false;
         }
       });
+    });
+  }
+
+  void nextClient() {
+    setState(() {
+      if (clientOrder == 1) {
+        clientOrder = 2;
+      } else if (clientOrder == 2) {
+        clientOrder = 3;
+      } else {
+        clientOrder = 1;
+      }
     });
   }
 
@@ -76,7 +91,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         backgroundColor:
                             const Color.fromARGB(255, 208, 183, 153),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        nextClient();
+                      },
                       child: const Text(''),
                     ),
                   ),
@@ -152,8 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    const SevenSegmentDisplay(
-                      value: "2",
+                    SevenSegmentDisplay(
+                      value: clientOrder
+                          .toString(), // clientOrder != Null ? clientOrder.toString() : '0',
                       size: 5.0,
                     ),
                     const SizedBox(
@@ -170,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(child: Container()),
                 Center(
                   child: SevenSegmentDisplay(
-                    value: "2.00", //timeFirstClient.toString(),
+                    value: listPriceForClients[clientOrder - 1].toString(),
                     size: 11.0,
                   ),
                   // SevenSegmentDisplay(
