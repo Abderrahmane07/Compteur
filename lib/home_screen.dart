@@ -15,8 +15,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int clientOrder = 1;
   List<int> priceForClientsList = [0, 1, 2];
   // int timeFirstClient = 5;
+  bool isOn = false;
   List<bool> isLaunchedList = [false, false, false];
 
+  // In this part there is a brut-forcing solution to separate the counters and to be working all the ime without interruption,
+  // by separating the same function into 3 separate ones for each client, we should go back to this to resolve it in a more
+  // elegant way, of course after having a functionnal app
   void _startOrResetCountDown1() {
     Timer.periodic(Duration(seconds: 1), (timer1) {
       setState(() {
@@ -68,6 +72,15 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         clientOrder = 1;
       }
+    });
+  }
+
+  void switchOnOff() {
+    setState(() {
+      isLaunchedList = [false, false, false];
+      priceForClientsList = [0, 1, 2];
+      clientOrder = 1;
+      isOn = !isOn;
     });
   }
 
@@ -151,7 +164,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         backgroundColor:
                             const Color.fromARGB(255, 208, 183, 153),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        switchOnOff();
+                      },
                       child: const Text(''),
                     ),
                   ),
@@ -194,48 +209,52 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 0, 0, 0),
             ),
-            child: Row(
-              children: [
-                const SizedBox(
-                  width: 30,
-                ),
-                Column(
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    SevenSegmentDisplay(
-                      value: clientOrder
-                          .toString(), // clientOrder != Null ? clientOrder.toString() : '0',
-                      size: 5.0,
-                    ),
-                    const SizedBox(
-                      height: 70,
-                    ),
-                    Container(
-                      width: 20.0,
-                      height: 20.0,
-                      decoration: const BoxDecoration(
-                          color: Colors.red, shape: BoxShape.circle),
-                    ),
-                  ],
-                ),
-                Expanded(child: Container()),
-                Center(
-                  child: SevenSegmentDisplay(
-                    value: priceForClientsList[clientOrder - 1].toString(),
-                    size: 11.0,
-                  ),
-                  // SevenSegmentDisplay(
-                  //   value: "123",
-                  //   size: 12.0,
-                  // ),
-                ),
-                const SizedBox(
-                  width: 15,
-                ),
-              ],
-            ),
+            // To switch it on and off we just test that bool and if it's true we display content, otherwise just an empty Row
+            child: isOn
+                ? Row(
+                    children: [
+                      const SizedBox(
+                        width: 30,
+                      ),
+                      Column(
+                        children: [
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          SevenSegmentDisplay(
+                            value: clientOrder
+                                .toString(), // clientOrder != Null ? clientOrder.toString() : '0',
+                            size: 5.0,
+                          ),
+                          const SizedBox(
+                            height: 70,
+                          ),
+                          Container(
+                            width: 20.0,
+                            height: 20.0,
+                            decoration: const BoxDecoration(
+                                color: Colors.red, shape: BoxShape.circle),
+                          ),
+                        ],
+                      ),
+                      Expanded(child: Container()),
+                      Center(
+                        child: SevenSegmentDisplay(
+                          value: priceForClientsList[clientOrder - 1]
+                              .toString(), //" ${priceForClientsList[clientOrder - 1]}.00",
+                          size: 11.0,
+                        ),
+                        // SevenSegmentDisplay(
+                        //   value: "123",
+                        //   size: 12.0,
+                        // ),
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                    ],
+                  )
+                : Row(),
           ),
           Expanded(child: Container()),
           // bloc 3: ad
