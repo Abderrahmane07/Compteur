@@ -96,8 +96,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void switchToNightMode() {
-    isNightTarif = !isNightTarif;
-    isNightTarif ? chute = 0.3 : chute = 0.2;
+    setState(() {
+      isNightTarif = !isNightTarif;
+      isNightTarif ? chute = 0.3 : chute = 0.2;
+    });
   }
 
   @override
@@ -106,176 +108,228 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color.fromARGB(255, 67, 61, 61),
       body: Row(
         children: [
-          const SizedBox(
-            width: 30,
-          ),
-          // bloc 1: buttons
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(
+                height: 40,
+              ),
               Row(
                 children: [
-                  SizedBox(
-                    height: 70,
-                    width: 70,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        side: const BorderSide(width: 2),
-                        backgroundColor: const Color.fromARGB(255, 48, 182, 97),
-                      ),
-                      onPressed: () {
-                        isLaunchedList[clientOrder - 1] =
-                            !isLaunchedList[clientOrder - 1];
-                        if (clientOrder == 1) {
-                          _startOrResetCountDown1();
-                        } else if (clientOrder == 2) {
-                          _startOrResetCountDown2();
-                        } else {
-                          _startOrResetCountDown3();
-                        }
-                      },
-                      child: const Text(''),
-                    ),
-                  ),
                   const SizedBox(
                     width: 30,
                   ),
-                  SizedBox(
-                    height: 70,
-                    width: 70,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        side: const BorderSide(width: 2),
-                        backgroundColor:
-                            const Color.fromARGB(255, 208, 183, 153),
+                  // bloc 1: buttons
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 70,
+                            width: 70,
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                side: const BorderSide(width: 2),
+                                backgroundColor:
+                                    const Color.fromARGB(255, 48, 182, 97),
+                              ),
+                              onPressed: () {
+                                isLaunchedList[clientOrder - 1] =
+                                    !isLaunchedList[clientOrder - 1];
+                                if (clientOrder == 1) {
+                                  _startOrResetCountDown1();
+                                } else if (clientOrder == 2) {
+                                  _startOrResetCountDown2();
+                                } else {
+                                  _startOrResetCountDown3();
+                                }
+                              },
+                              child: const Text(''),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 30,
+                          ),
+                          SizedBox(
+                            height: 70,
+                            width: 70,
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                side: const BorderSide(width: 2),
+                                backgroundColor:
+                                    const Color.fromARGB(255, 208, 183, 153),
+                              ),
+                              onPressed: () {
+                                nextClient();
+                              },
+                              child: const Text(''),
+                            ),
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        nextClient();
-                      },
-                      child: const Text(''),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 70,
+                            width: 70,
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                side: const BorderSide(width: 2),
+                                backgroundColor:
+                                    const Color.fromARGB(255, 208, 183, 153),
+                              ),
+                              onPressed: () {
+                                switchOnOff();
+                              },
+                              child: const Text(''),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 30,
+                          ),
+                          SizedBox(
+                            height: 70,
+                            width: 70,
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                side: const BorderSide(width: 2),
+                                backgroundColor:
+                                    const Color.fromARGB(255, 208, 183, 153),
+                              ),
+                              onPressed: () {
+                                switchToNightMode();
+                                // Navigator.of(context).push(
+                                //   MaterialPageRoute(
+                                //     builder: (context) => TestsScreen(),
+                                //   ),
+                                // );
+                              },
+                              child: const Text(''),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 60,
+                  ),
+                  // bloc 2: counter
+                  Container(
+                    height: 200,
+                    width: 400,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 0, 0, 0),
                     ),
+                    // To switch it on and off we just test that bool and if it's true we display content, otherwise just an empty Row
+                    child: isOn
+                        ? Row(
+                            children: [
+                              const SizedBox(
+                                width: 30,
+                              ),
+                              Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  SevenSegmentDisplay(
+                                    value: clientOrder
+                                        .toString(), // clientOrder != Null ? clientOrder.toString() : '0',
+                                    size: 5.0,
+                                  ),
+                                  const SizedBox(
+                                    height: 70,
+                                  ),
+                                  isNightTarif
+                                      ? Container(
+                                          width: 20.0,
+                                          height: 20.0,
+                                          decoration: const BoxDecoration(
+                                              color: Colors.red,
+                                              shape: BoxShape.circle),
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                              Expanded(child: Container()),
+                              Center(
+                                child: SevenSegmentDisplay(
+                                  value: finalPriceForClientsList[
+                                          clientOrder - 1]
+                                      .toStringAsFixed(
+                                          2), //" ${priceForClientsList[clientOrder - 1]}.00",
+                                  size: 11.0,
+                                ),
+                                // SevenSegmentDisplay(
+                                //   value: "123",
+                                //   size: 12.0,
+                                // ),
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                            ],
+                          )
+                        : Row(),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 30,
+              SizedBox(
+                height: 40,
               ),
               Row(
                 children: [
                   SizedBox(
-                    height: 70,
-                    width: 70,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        side: const BorderSide(width: 2),
-                        backgroundColor:
-                            const Color.fromARGB(255, 208, 183, 153),
-                      ),
-                      onPressed: () {
-                        switchOnOff();
-                      },
-                      child: const Text(''),
+                    width: 20,
+                  ),
+                  Container(
+                    height: 10,
+                    width: 240,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 48, 132, 112),
                     ),
                   ),
-                  const SizedBox(
-                    width: 30,
+                  SizedBox(
+                    width: 15,
+                  ),
+                  const Text(
+                    "LARCHI",
+                    style: TextStyle(
+                      fontSize: 40,
+                      color: Color.fromARGB(255, 48, 132, 112),
+                      letterSpacing: 6,
+                    ),
                   ),
                   SizedBox(
-                    height: 70,
-                    width: 70,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        side: const BorderSide(width: 2),
-                        backgroundColor:
-                            const Color.fromARGB(255, 208, 183, 153),
-                      ),
-                      onPressed: () {
-                        switchToNightMode();
-                        // Navigator.of(context).push(
-                        //   MaterialPageRoute(
-                        //     builder: (context) => TestsScreen(),
-                        //   ),
-                        // );
-                      },
-                      child: const Text(''),
+                    width: 15,
+                  ),
+                  Container(
+                    height: 10,
+                    width: 197,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 48, 132, 112),
                     ),
                   ),
                 ],
               ),
             ],
-          ),
-          const SizedBox(
-            width: 60,
-          ),
-          // bloc 2: counter
-          Container(
-            height: 200,
-            width: 400,
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 0, 0, 0),
-            ),
-            // To switch it on and off we just test that bool and if it's true we display content, otherwise just an empty Row
-            child: isOn
-                ? Row(
-                    children: [
-                      const SizedBox(
-                        width: 30,
-                      ),
-                      Column(
-                        children: [
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          SevenSegmentDisplay(
-                            value: clientOrder
-                                .toString(), // clientOrder != Null ? clientOrder.toString() : '0',
-                            size: 5.0,
-                          ),
-                          const SizedBox(
-                            height: 70,
-                          ),
-                          isNightTarif
-                              ? Container(
-                                  width: 20.0,
-                                  height: 20.0,
-                                  decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle),
-                                )
-                              : Container(),
-                        ],
-                      ),
-                      Expanded(child: Container()),
-                      Center(
-                        child: SevenSegmentDisplay(
-                          value: finalPriceForClientsList[clientOrder - 1]
-                              .toStringAsFixed(
-                                  2), //" ${priceForClientsList[clientOrder - 1]}.00",
-                          size: 11.0,
-                        ),
-                        // SevenSegmentDisplay(
-                        //   value: "123",
-                        //   size: 12.0,
-                        // ),
-                      ),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                    ],
-                  )
-                : Row(),
           ),
           Expanded(child: Container()),
           // bloc 3: ad
