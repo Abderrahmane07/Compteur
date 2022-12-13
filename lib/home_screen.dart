@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:compeur/test_location_screen.dart';
 import 'package:compeur/tests_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:segment_display/segment_display.dart';
+import 'dart:math' show cos, sqrt, asin;
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -19,23 +22,73 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isNightTarif = false;
   bool isOn = false;
   List<bool> isLaunchedList = [false, false, false];
+  // var locationMessage = '';
+
+  Future<List<double?>> getCurrentLocation() async {
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
+    var lastPosition = await Geolocator.getLastKnownPosition();
+    double? lat = lastPosition?.latitude;
+    double? lon = lastPosition?.longitude;
+    return [lat, lon];
+    // print(lastPosition);
+    // setState(() {
+    //   // locationMessage = "${position.latitude} , ${position.longitude}";
+
+    // });
+  }
+
+  double distance = 0;
+  List<double?> list1 = [0, 0];
+  List<double?> list2 = [0, 0];
+  // Now we are going to try to implement the possibility of getting the price also by position and the travelled distance
+  void priceByDistance() async {
+    // double? lat1, lat2, lon1, lon2;
+
+    // list1 = await getCurrentLocation();
+    Timer.periodic(const Duration(seconds: 2), ((timer1) async {
+      list2 = await getCurrentLocation();
+      setState(() {
+        print(distance);
+        distance += calculateDistance(list1[0], list1[1], list2[0], list2[1]);
+        list1 = list2;
+        int i = 1;
+        if (distance > 8 * i) {
+          priceForClientsList[0]++;
+          i++;
+        }
+      });
+    }));
+  }
+
+  double calculateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12735092 * asin(sqrt(a));
+  }
 
   // In this part there is a brut-forcing solution to separate the counters and to be working all the ime without interruption,
   // by separating the same function into 3 separate ones for each client, we should go back to this to resolve it in a more
   // elegant way, of course after having a functionnal app
   void _startOrResetCountDown1() {
-    Timer.periodic(Duration(seconds: 1), (timer1) {
-      setState(() {
-        if (isLaunchedList[0]) {
+    Timer.periodic(Duration(seconds: 1), (timer1) async {
+      if (isLaunchedList[0]) {
+        list1 = await getCurrentLocation();
+        setState(() {
           priceForClientsList[0]++;
           finalPriceForClientsList[0] = chute * priceForClientsList[0];
-        } else {
+        });
+      } else {
+        setState(() {
           timer1.cancel();
           priceForClientsList[0] = 0;
           finalPriceForClientsList[0] = 0;
           isLaunchedList[0] = false;
-        }
-      });
+        });
+      }
     });
   }
 
@@ -126,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         children: [
                           SizedBox(
+                            //Button 1
                             height: 70,
                             width: 70,
                             child: OutlinedButton(
@@ -155,6 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 30,
                           ),
                           SizedBox(
+                            //Button 2
                             height: 70,
                             width: 70,
                             child: OutlinedButton(
@@ -180,6 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         children: [
                           SizedBox(
+                            //Button 3
                             height: 70,
                             width: 70,
                             child: OutlinedButton(
@@ -201,6 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 30,
                           ),
                           SizedBox(
+                            //Button 4
                             height: 70,
                             width: 70,
                             child: OutlinedButton(
@@ -219,6 +276,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 //     builder: (context) => TestsScreen(),
                                 //   ),
                                 // );
+                              },
+                              onLongPress: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => TestLocationScreen(),
+                                  ),
+                                );
                               },
                               child: const Text(''),
                             ),
@@ -291,12 +355,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 40,
               ),
               Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                   ),
                   Container(
@@ -306,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Color.fromARGB(255, 48, 132, 112),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   const Text(
@@ -317,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       letterSpacing: 6,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   Container(
