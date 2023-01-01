@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int clientOrder = 1;
-  List<int> priceForClientsList = [0, 1, 2];
+  List<int> priceForClientsList = [5, 1, 2];
   List<double> finalPriceForClientsList = [0, 0, 0];
   double chute = 0.20; // Tarif à payer par minute écoulée
   bool isNightTarif = false;
@@ -41,26 +41,23 @@ class _HomeScreenState extends State<HomeScreen> {
   double distance = 0;
   List<double?> list1 = [0, 0];
   List<double?> list2 = [0, 0];
+  int i = 1;
   // Now we are going to try to implement the possibility of getting the price also by position and the travelled distance
-  void priceByDistance() async {
-    // double? lat1, lat2, lon1, lon2;
-
-    // list1 = await getCurrentLocation();
-    Timer.periodic(const Duration(seconds: 2), ((timer1) async {
-      list2 = await getCurrentLocation();
-      setState(() {
-        print(distance);
-        distance += calculateDistance(list1[0], list1[1], list2[0], list2[1]);
-        list1 = list2;
-        int i = 1;
-        if (distance > 8 * i) {
-          priceForClientsList[0]++;
-          i++;
-        }
-      });
-    }));
+  Future<void> priceByDistance() async {
+    list2 = await getCurrentLocation();
+    setState(() {
+      print(distance);
+      distance += calculateDistance(list1[0], list1[1], list2[0], list2[1]);
+      list1 = list2;
+      if (distance > (8 * i)) {
+        priceForClientsList[0]++;
+        i++;
+      }
+    });
   }
 
+  // This function gives the distance between thow points, the returned result depends on the diameter of the earth
+  // wich is the one of Bordeaux's
   double calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
@@ -73,10 +70,17 @@ class _HomeScreenState extends State<HomeScreen> {
   // In this part there is a brut-forcing solution to separate the counters and to be working all the ime without interruption,
   // by separating the same function into 3 separate ones for each client, we should go back to this to resolve it in a more
   // elegant way, of course after having a functionnal app
-  void _startOrResetCountDown1() {
-    Timer.periodic(Duration(seconds: 1), (timer1) async {
+  int secondsCounter = 0;
+  Future<void> _startOrResetCountDown1() async {
+    list1 = await getCurrentLocation();
+    Timer.periodic(Duration(seconds: 1), (timer1) {
+      secondsCounter++;
+      print(priceForClientsList[0]);
+      // The secondsCounter here is used to allow us to make the call to get the user's location every 2 seconds
+      if (secondsCounter % 2 == 0) {
+        priceByDistance();
+      }
       if (isLaunchedList[0]) {
-        list1 = await getCurrentLocation();
         setState(() {
           priceForClientsList[0]++;
           finalPriceForClientsList[0] = chute * priceForClientsList[0];
@@ -84,6 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         setState(() {
           timer1.cancel();
+          i = 0;
+          distance = 0;
           priceForClientsList[0] = 0;
           finalPriceForClientsList[0] = 0;
           isLaunchedList[0] = false;
