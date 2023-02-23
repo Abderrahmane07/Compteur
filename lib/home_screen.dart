@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:compeur/button_class.dart';
+import 'package:compeur/client_class.dart';
+import 'package:compeur/screen_of_compteur.dart';
 import 'package:compeur/test_location_screen.dart';
 import 'package:compeur/tests_screen.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int clientOrder = 1;
   List<int> priceForClientsList = [5, 1, 2];
   List<double> finalPriceForClientsList = [0, 0, 0];
-  double chute = 0.20; // Tarif à payer par minute écoulée
-  bool isNightTarif = false;
-  bool isOn = false;
+  double chute = 0.20; // Tarriff à payer par minute écoulée
+  bool isNightTarriff = false;
+  bool isOn = true;
   List<bool> isLaunchedList = [false, false, false];
   // var locationMessage = '';
 
@@ -56,8 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // This function gives the distance between thow points, the returned result depends on the diameter of the earth
-  // wich is the one of Bordeaux's
+  // This function gives the distance between two points, the returned result depends on the diameter of the earth
+  // wich is the one of Bordeaux's here
   double calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
@@ -130,6 +133,22 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _startOrResetCountDown(Client clienta) {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (clienta.isLaunched) {
+          clienta.initialPrice++;
+          clienta.finalPrice = chute * clienta.initialPrice;
+        } else {
+          timer.cancel();
+          clienta.initialPrice = 0;
+          clienta.finalPrice = 0;
+          clienta.isLaunched = false;
+        }
+      });
+    });
+  }
+
   void nextClient() {
     setState(() {
       if (clientOrder == 1) {
@@ -147,17 +166,17 @@ class _HomeScreenState extends State<HomeScreen> {
       isLaunchedList = [false, false, false];
       priceForClientsList = [0, 1, 2];
       clientOrder = 1;
-      if (isNightTarif) {
-        switchToNightMode();
+      if (isNightTarriff) {
+        switchToNightTarriff();
       }
       isOn = !isOn;
     });
   }
 
-  void switchToNightMode() {
+  void switchToNightTarriff() {
     setState(() {
-      isNightTarif = !isNightTarif;
-      isNightTarif ? chute = 0.3 : chute = 0.2;
+      isNightTarriff = !isNightTarriff;
+      isNightTarriff ? chute = 0.3 : chute = 0.2;
     });
   }
 
@@ -184,55 +203,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Row(
                         children: [
-                          SizedBox(
-                            //Button 1
-                            height: 70,
-                            width: 70,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                side: const BorderSide(width: 2),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 48, 182, 97),
-                              ),
-                              onPressed: () {
-                                isLaunchedList[clientOrder - 1] =
-                                    !isLaunchedList[clientOrder - 1];
-                                if (clientOrder == 1) {
-                                  _startOrResetCountDown1();
-                                } else if (clientOrder == 2) {
-                                  _startOrResetCountDown2();
-                                } else {
-                                  _startOrResetCountDown3();
-                                }
-                              },
-                              child: const Text(''),
-                            ),
-                          ),
+                          // Button 1
+                          ButtonToImplemet().buttonToReturn(
+                              const Color.fromARGB(255, 48, 182, 97),
+                              onPressedButton),
                           const SizedBox(
                             width: 30,
                           ),
-                          SizedBox(
-                            //Button 2
-                            height: 70,
-                            width: 70,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                side: const BorderSide(width: 2),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 208, 183, 153),
-                              ),
-                              onPressed: () {
-                                nextClient();
-                              },
-                              child: const Text(''),
-                            ),
-                          ),
+                          // Button 2
+                          ButtonToImplemet().buttonToReturn(
+                              const Color.fromARGB(255, 208, 183, 153),
+                              nextClient),
                         ],
                       ),
                       const SizedBox(
@@ -240,59 +221,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Row(
                         children: [
-                          SizedBox(
-                            //Button 3
-                            height: 70,
-                            width: 70,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                side: const BorderSide(width: 2),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 208, 183, 153),
-                              ),
-                              onPressed: () {
-                                switchOnOff();
-                              },
-                              child: const Text(''),
-                            ),
-                          ),
+                          // Button 3
+                          ButtonToImplemet().buttonToReturn(
+                              const Color.fromARGB(255, 208, 183, 153),
+                              switchOnOff),
                           const SizedBox(
                             width: 30,
                           ),
-                          SizedBox(
-                            //Button 4
-                            height: 70,
-                            width: 70,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                side: const BorderSide(width: 2),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 208, 183, 153),
-                              ),
-                              onPressed: () {
-                                switchToNightMode();
-                                // Navigator.of(context).push(
-                                //   MaterialPageRoute(
-                                //     builder: (context) => TestsScreen(),
-                                //   ),
-                                // );
-                              },
-                              onLongPress: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => TestLocationScreen(),
-                                  ),
-                                );
-                              },
-                              child: const Text(''),
-                            ),
-                          ),
+                          // Button 4
+                          ButtonToImplemet().buttonToReturn(
+                              const Color.fromARGB(255, 208, 183, 153),
+                              switchToNightTarriff),
+                          // onLongPress: () {
+                          //   Navigator.of(context).push(
+                          //     MaterialPageRoute(
+                          //       builder: (context) => TestLocationScreen(),
+                          //     ),
+                          //   );
+                          // },
                         ],
                       ),
                     ],
@@ -301,64 +247,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 60,
                   ),
                   // bloc 2: counter
-                  Container(
-                    height: 200,
-                    width: 400,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                    // To switch it on and off we just test that bool and if it's true we display content, otherwise just an empty Row
-                    child: isOn
-                        ? Row(
-                            children: [
-                              const SizedBox(
-                                width: 30,
-                              ),
-                              Column(
-                                children: [
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  SevenSegmentDisplay(
-                                    value: clientOrder
-                                        .toString(), // clientOrder != Null ? clientOrder.toString() : '0',
-                                    size: 5.0,
-                                  ),
-                                  const SizedBox(
-                                    height: 70,
-                                  ),
-                                  isNightTarif
-                                      ? Container(
-                                          width: 20.0,
-                                          height: 20.0,
-                                          decoration: const BoxDecoration(
-                                              color: Colors.red,
-                                              shape: BoxShape.circle),
-                                        )
-                                      : Container(),
-                                ],
-                              ),
-                              Expanded(child: Container()),
-                              Center(
-                                child: SevenSegmentDisplay(
-                                  value: finalPriceForClientsList[
-                                          clientOrder - 1]
-                                      .toStringAsFixed(
-                                          2), //" ${priceForClientsList[clientOrder - 1]}.00",
-                                  size: 11.0,
-                                ),
-                                // SevenSegmentDisplay(
-                                //   value: "123",
-                                //   size: 12.0,
-                                // ),
-                              ),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                            ],
-                          )
-                        : Row(),
-                  ),
+                  ScreenOfCompteur().screenToPlace(isOn, clientOrder,
+                      isNightTarriff, finalPriceForClientsList),
                 ],
               ),
               const SizedBox(
@@ -414,5 +304,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  void onPressedButton() {
+    isLaunchedList[clientOrder - 1] = !isLaunchedList[clientOrder - 1];
+    if (clientOrder == 1) {
+      _startOrResetCountDown1();
+    } else if (clientOrder == 2) {
+      _startOrResetCountDown2();
+    } else {
+      _startOrResetCountDown3();
+    }
   }
 }

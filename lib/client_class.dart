@@ -7,6 +7,17 @@
 // - the second's counter that verifies when to check the user's location
 // - the function that starts the countdown and resets it.
 
+import 'dart:async';
+
 class Client {
   int initialPrice = 0;
+  double? finalPrice;
+  bool isLaunched = false;
+  double? latitude;
+  double? longitude;
+  int? secondsCounter = 0;
+  Timer? timer;
+
+  // Client();
+
 }
