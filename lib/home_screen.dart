@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:compeur/button_class.dart';
 import 'package:compeur/client_class.dart';
 import 'package:compeur/screen_of_compteur.dart';
-import 'package:compeur/test_location_screen.dart';
-import 'package:compeur/tests_screen.dart';
+// import 'package:compeur/test_location_screen.dart';
+// import 'package:compeur/tests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:segment_display/segment_display.dart';
+// import 'package:segment_display/segment_display.dart';
 import 'dart:math' show cos, sqrt, asin;
+
+import 'city_class.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -18,21 +20,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  City tangier = City(1.6, 100, 0.3, 12741744);
+  City casablanca = City(2.0, 80, 0.2, 12743254);
+  Client client1 = Client();
+  Client client2 = Client();
+  Client client3 = Client();
   int clientOrder = 1;
-  List<int> priceForClientsList = [5, 1, 2];
+  List<int> priceForClientsList = [0, 1, 2];
   List<double> finalPriceForClientsList = [0, 0, 0];
-  double chute = 0.20; // Tarriff à payer par minute écoulée
+  double chute =
+      0.20; // Tarif à payer par minute écoulée ou par unité de disatnce traversée
   bool isNightTarriff = false;
   bool isOn = true;
   List<bool> isLaunchedList = [false, false, false];
+  // List<bool> isLaunchedList2 = [client1.isLaunched, false, false];
   // var locationMessage = '';
 
   Future<List<double?>> getCurrentLocation() async {
     var position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
-    var lastPosition = await Geolocator.getLastKnownPosition();
-    double? lat = lastPosition?.latitude;
-    double? lon = lastPosition?.longitude;
+    // var lastPosition = await Geolocator.getLastKnownPosition();
+    double? lat = position.latitude;
+    double? lon = position.longitude;
     return [lat, lon];
     // print(lastPosition);
     // setState(() {
@@ -47,9 +56,13 @@ class _HomeScreenState extends State<HomeScreen> {
   int i = 1;
   // Now we are going to try to implement the possibility of getting the price also by position and the travelled distance
   Future<void> priceByDistance() async {
+    //print('2nd: ce que contient la liste 1 avant :' + list1.toString());
+    //print('3rd: ce que contient la liste 2 avant :' + list2.toString());
     list2 = await getCurrentLocation();
+    //print('4th: ce que contient la liste 1 après :' + list1.toString());
+    //print('5th: ce que contient la liste 2 après :' + list2.toString());
     setState(() {
-      print(distance);
+      print('6th' + distance.toString());
       distance += calculateDistance(list1[0], list1[1], list2[0], list2[1]);
       list1 = list2;
       if (distance > (8 * i)) {
@@ -67,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var a = 0.5 -
         c((lat2 - lat1) * p) / 2 +
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    return 12735092 * asin(sqrt(a));
+    return tangier.earthDiameter * asin(sqrt(a));
   }
 
   // In this part there is a brut-forcing solution to separate the counters and to be working all the ime without interruption,
@@ -78,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
     list1 = await getCurrentLocation();
     Timer.periodic(Duration(seconds: 1), (timer1) {
       secondsCounter++;
-      print(priceForClientsList[0]);
+      print('1st' + priceForClientsList[0].toString());
       // The secondsCounter here is used to allow us to make the call to get the user's location every 2 seconds
       if (secondsCounter % 2 == 0) {
         priceByDistance();
@@ -101,49 +114,21 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _startOrResetCountDown2() {
-    Timer.periodic(Duration(seconds: 1), (timer2) {
-      setState(() {
-        if (isLaunchedList[1]) {
-          priceForClientsList[1]++;
-          finalPriceForClientsList[1] = chute * priceForClientsList[1];
-        } else {
-          timer2.cancel();
-          priceForClientsList[1] = 0;
-          finalPriceForClientsList[1] = 0;
-          isLaunchedList[1] = false;
-        }
-      });
-    });
-  }
-
-  void _startOrResetCountDown3() {
-    Timer.periodic(Duration(seconds: 1), (timer3) {
-      setState(() {
-        if (isLaunchedList[2]) {
-          priceForClientsList[2]++;
-          finalPriceForClientsList[2] = chute * priceForClientsList[2];
-        } else {
-          timer3.cancel();
-          priceForClientsList[2] = 0;
-          finalPriceForClientsList[2] = 0;
-          isLaunchedList[2] = false;
-        }
-      });
-    });
-  }
-
-  void _startOrResetCountDown(Client clienta) {
+  void _startOrResetCountDown(Client client, int clientOrder) {
+    client.isLaunched = !client.isLaunched;
     Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        if (clienta.isLaunched) {
-          clienta.initialPrice++;
-          clienta.finalPrice = chute * clienta.initialPrice;
+        if (client.isLaunched) {
+          client.priceUnit++;
+          client.finalPrice = chute * client.priceUnit;
+          print(client.finalPrice);
+          finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
         } else {
           timer.cancel();
-          clienta.initialPrice = 0;
-          clienta.finalPrice = 0;
-          clienta.isLaunched = false;
+          client.priceUnit = 0;
+          client.finalPrice = 0;
+          client.isLaunched = false;
+          finalPriceForClientsList[clientOrder - 1] = 0;
         }
       });
     });
@@ -232,13 +217,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ButtonToImplemet().buttonToReturn(
                               const Color.fromARGB(255, 208, 183, 153),
                               switchToNightTarriff),
-                          // onLongPress: () {
-                          //   Navigator.of(context).push(
-                          //     MaterialPageRoute(
-                          //       builder: (context) => TestLocationScreen(),
-                          //     ),
-                          //   );
-                          // },
                         ],
                       ),
                     ],
@@ -311,9 +289,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (clientOrder == 1) {
       _startOrResetCountDown1();
     } else if (clientOrder == 2) {
-      _startOrResetCountDown2();
+      _startOrResetCountDown(client2, clientOrder);
     } else {
-      _startOrResetCountDown3();
+      _startOrResetCountDown(client3, clientOrder);
     }
   }
 }

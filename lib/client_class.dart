@@ -10,14 +10,28 @@
 import 'dart:async';
 
 class Client {
-  int initialPrice = 0;
-  double? finalPrice;
+  int priceUnit = 0;
+  double finalPrice = 0;
   bool isLaunched = false;
   double? latitude;
   double? longitude;
   int? secondsCounter = 0;
   Timer? timer;
-
+//   Client(this.priceUnit, this.finalPrice, this.isLaunched, this.latitude,
+// );
   // Client();
 
+  // void startOrResetCountDown(double chute) {
+  //   Timer.periodic(Duration(seconds: 1), (timer) {
+  //     if (isLaunched) {
+  //       priceUnit++;
+  //       finalPrice = chute * priceUnit;
+  //     } else {
+  //       timer.cancel();
+  //       priceUnit = 0;
+  //       finalPrice = 0;
+  //       isLaunched = false;
+  //     }
+  //   });
+  // }
 }

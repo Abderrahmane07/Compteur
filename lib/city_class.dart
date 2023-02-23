@@ -14,7 +14,10 @@ class City {
   double? intialPriceCity;
   int? distanceToChange;
   double? chute;
-  int earthDameter = 12741744; // with meters in Tangier
+  int earthDiameter = 12741744; // with meters in Tangier
+
+  City(this.intialPriceCity, this.distanceToChange, this.chute,
+      this.earthDiameter);
 
   // Client();
 }
