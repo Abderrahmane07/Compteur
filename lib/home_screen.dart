@@ -29,12 +29,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   late BannerAd bannerAd;
-  var adUnit = "ca-app-pub-3940256099942544/6300978111"; // testing ad id
+  var adUnit =
+      "ca-app-pub-3940256099942544/6300978111"; // testing ad id // The real one is ca-app-pub-7524555526929904/4951964227
   bool isAdLoaded = false;
 
   initBannerAd() {
     bannerAd = BannerAd(
-      size: AdSize.banner,
+      size: AdSize.fullBanner,
       adUnitId: adUnit,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
@@ -57,6 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   City tangier = City(1.6, 100, 0.3, 12741744);
   City casablanca = City(2.0, 80, 0.2, 12743254);
+  // City city = City(1.6, 100, 0.3, 12741744);
+  late City city = tangier;
   Client client1 = Client();
   Client client2 = Client();
   Client client3 = Client();
@@ -83,10 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
           client.list1[0], client.list1[1], client.list2[0], client.list2[1]);
       client.list1 = client.list2;
       print(client.distance);
-      if (client.distance > (tangier.distanceToChange * client.i)) {
+      if (client.distance > (city.distanceToChange * client.i)) {
         client.priceUnit++;
         print('upgrade using the distance');
-        //  client.i++;
+        client.i++;
       }
     });
   }
@@ -99,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var a = 0.5 -
         c((lat2 - lat1) * p) / 2 +
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    return tangier.earthDiameter * asin(sqrt(a));
+    return city.earthDiameter * asin(sqrt(a));
   }
 
   // In this part there is a brut-forcing solution to separate the counters and to be working all the ime without interruption,
@@ -108,11 +111,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _startOrResetCountDownGeneral(
       Client client, int clientOrder) async {
     client.isLaunched = !client.isLaunched;
-    client.finalPrice = tangier.intialPriceCity;
-    finalPriceForClientsList[clientOrder - 1] = tangier.intialPriceCity;
+    client.finalPrice = city.intialPriceCity;
+    finalPriceForClientsList[clientOrder - 1] = city.intialPriceCity;
     client.list1 = await getCurrentLocation();
     Timer.periodic(Duration(seconds: 1), (timer) {
       client.secondsCounter++;
+      client.finalPrice = city.intialPriceCity + city.chute * client.priceUnit;
+      finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
       // The secondsCounter here is used to allow us to make the call to get the user's location every 2 seconds
       if (client.secondsCounter % 2 == 0) {
         priceByDistance(client);
@@ -121,18 +126,19 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           //client.finalPrice =
           //  tangier.intialPriceCity + (tangier.chute * client.priceUnit);
-          if (client.secondsCounter % 60 == 0) {
+          if (client.secondsCounter % 4 == 0) {
             client.priceUnit++;
             //print('This is the unitPrice' + client.priceUnit.toString());
-            client.finalPrice =
-                tangier.intialPriceCity + tangier.chute * client.priceUnit;
-            finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
+
+            // client.finalPrice =
+            //     city.intialPriceCity + city.chute * client.priceUnit;
+            // finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
           }
         });
       } else {
         setState(() {
           timer.cancel();
-          client.i = 0;
+          client.i = 1;
           client.distance = 0;
           client.priceUnit = 0;
           client.finalPrice = 0;
@@ -174,9 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void switchToNightTarriff() {
     setState(() {
       isNightTarriff = !isNightTarriff;
-      isNightTarriff
-          ? tangier.chute = tangier.chute * 1.5
-          : tangier.chute = tangier.chute;
+      isNightTarriff ? city.chute = city.chute * 1.5 : city.chute = city.chute;
     });
   }
 
@@ -308,7 +312,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          Expanded(child: Container()),
+          // Expanded(child: Container()),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(color: Colors.amber[50]),
+              child: DropdownButton<City>(
+                items: [
+                  DropdownMenuItem<City>(
+                      child: Text("Tangier"), value: tangier),
+                  DropdownMenuItem<City>(
+                      child: Text("Casa"), value: casablanca),
+                  //DropdownMenuItem<City>(child: Text("Rabat"), value: tangier),
+                ],
+                value: city,
+                //style: const TextStyle(color: Colors.white),
+                dropdownColor: Colors.amber[50],
+                onChanged: (City? newCity) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    city = newCity!;
+                  });
+                },
+              ),
+            ),
+          ),
           // bloc 3: ad
           isAdLoaded
               // ? SizedBox(
@@ -318,11 +345,14 @@ class _HomeScreenState extends State<HomeScreen> {
               //       ad: bannerAd,
               //     ),
               //   )
-              ? SizedBox(
-                  height: 400,
-                  width: 150,
-                  child: AdWidget(
-                    ad: bannerAd,
+              ? RotatedBox(
+                  quarterTurns: 3,
+                  child: SizedBox(
+                    height: bannerAd.size.height.toDouble(),
+                    width: bannerAd.size.width.toDouble(),
+                    child: AdWidget(
+                      ad: bannerAd,
+                    ),
                   ),
                 )
               : SizedBox(
@@ -337,6 +367,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  // void dropDownCallback(String? selectedValue){
+  //   setState(() {
+  //     city =
+  //   });
+  // }
 
   void onPressedButton() {
     isLaunchedList[clientOrder - 1] = !isLaunchedList[clientOrder - 1];
