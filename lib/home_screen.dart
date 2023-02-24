@@ -33,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isNightTarriff = false;
   bool isOn = true;
   List<bool> isLaunchedList = [false, false, false];
-  // List<bool> isLaunchedList2 = [client1.isLaunched, false, false];
   // var locationMessage = '';
 
   Future<List<double?>> getCurrentLocation() async {
@@ -50,24 +49,24 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
   }
 
-  double distance = 0;
-  List<double?> list1 = [0, 0];
-  List<double?> list2 = [0, 0];
-  int i = 1;
   // Now we are going to try to implement the possibility of getting the price also by position and the travelled distance
-  Future<void> priceByDistance() async {
-    //print('2nd: ce que contient la liste 1 avant :' + list1.toString());
-    //print('3rd: ce que contient la liste 2 avant :' + list2.toString());
-    list2 = await getCurrentLocation();
-    //print('4th: ce que contient la liste 1 après :' + list1.toString());
-    //print('5th: ce que contient la liste 2 après :' + list2.toString());
+  Future<void> priceByDistance(Client client) async {
+    client.list2 = await getCurrentLocation();
     setState(() {
-      print('6th' + distance.toString());
-      distance += calculateDistance(list1[0], list1[1], list2[0], list2[1]);
-      list1 = list2;
-      if (distance > (8 * i)) {
+      // print('La distance parcourue par le client ' +
+      //     clientOrder.toString() +
+      //     ' est ' +
+      //     client.distance.toStringAsFixed(2) +
+      //     'm sur une durée de ' +
+      //     client.secondsCounter.toString() +
+      //     ' secondes');
+      client.distance += calculateDistance(
+          client.list1[0], client.list1[1], client.list2[0], client.list2[1]);
+      client.list1 = client.list2;
+      if (client.distance > (tangier.distanceToChange / 10 * client.i)) {
         priceForClientsList[0]++;
-        i++;
+        client.priceUnit++;
+        client.i++;
       }
     });
   }
@@ -86,51 +85,32 @@ class _HomeScreenState extends State<HomeScreen> {
   // In this part there is a brut-forcing solution to separate the counters and to be working all the ime without interruption,
   // by separating the same function into 3 separate ones for each client, we should go back to this to resolve it in a more
   // elegant way, of course after having a functionnal app
-  int secondsCounter = 0;
-  Future<void> _startOrResetCountDown1() async {
-    list1 = await getCurrentLocation();
-    Timer.periodic(Duration(seconds: 1), (timer1) {
-      secondsCounter++;
-      print('1st' + priceForClientsList[0].toString());
+  Future<void> _startOrResetCountDownGeneral(
+      Client client, int clientOrder) async {
+    client.isLaunched = !client.isLaunched;
+    client.list1 = await getCurrentLocation();
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      client.secondsCounter++;
       // The secondsCounter here is used to allow us to make the call to get the user's location every 2 seconds
-      if (secondsCounter % 2 == 0) {
-        priceByDistance();
+      if (client.secondsCounter % 2 == 0) {
+        priceByDistance(client);
       }
-      if (isLaunchedList[0]) {
+      if (client.isLaunched) {
         setState(() {
-          priceForClientsList[0]++;
-          finalPriceForClientsList[0] = chute * priceForClientsList[0];
+          client.priceUnit++;
+          client.finalPrice = chute * client.priceUnit;
+          finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
         });
       } else {
         setState(() {
-          timer1.cancel();
-          i = 0;
-          distance = 0;
-          priceForClientsList[0] = 0;
-          finalPriceForClientsList[0] = 0;
-          isLaunchedList[0] = false;
+          timer.cancel();
+          client.i = 0;
+          client.distance = 0;
+          client.priceUnit = 0;
+          finalPriceForClientsList[clientOrder - 1] = 0;
+          client.isLaunched = false;
         });
       }
-    });
-  }
-
-  void _startOrResetCountDown(Client client, int clientOrder) {
-    client.isLaunched = !client.isLaunched;
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (client.isLaunched) {
-          client.priceUnit++;
-          client.finalPrice = chute * client.priceUnit;
-          print(client.finalPrice);
-          finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
-        } else {
-          timer.cancel();
-          client.priceUnit = 0;
-          client.finalPrice = 0;
-          client.isLaunched = false;
-          finalPriceForClientsList[clientOrder - 1] = 0;
-        }
-      });
     });
   }
 
@@ -287,11 +267,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void onPressedButton() {
     isLaunchedList[clientOrder - 1] = !isLaunchedList[clientOrder - 1];
     if (clientOrder == 1) {
-      _startOrResetCountDown1();
+      _startOrResetCountDownGeneral(client1, clientOrder);
     } else if (clientOrder == 2) {
-      _startOrResetCountDown(client2, clientOrder);
+      _startOrResetCountDownGeneral(client2, clientOrder);
     } else {
-      _startOrResetCountDown(client3, clientOrder);
+      _startOrResetCountDownGeneral(client3, clientOrder);
     }
   }
 }

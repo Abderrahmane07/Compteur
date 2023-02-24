@@ -12,7 +12,7 @@ enum Cities { Casablanca, Tangier, Rabat, Fez, Tetouan, Custom }
 
 class City {
   double? intialPriceCity;
-  int? distanceToChange;
+  int distanceToChange;
   double? chute;
   int earthDiameter = 12741744; // with meters in Tangier
 

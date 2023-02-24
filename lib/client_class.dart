@@ -15,8 +15,13 @@ class Client {
   bool isLaunched = false;
   double? latitude;
   double? longitude;
-  int? secondsCounter = 0;
+  int secondsCounter = 0;
   Timer? timer;
+
+  double distance = 0;
+  List<double?> list1 = [0, 0]; // [Latitude, Longitude]
+  List<double?> list2 = [0, 0];
+  int i = 1;
 //   Client(this.priceUnit, this.finalPrice, this.isLaunched, this.latitude,
 // );
   // Client();
