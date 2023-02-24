@@ -1,16 +1,23 @@
 import 'package:compeur/tests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'home_screen.dart';
 
-void main() {
+void main() async {
+  var devices = ['7225CEAC1CB92443E2B8CC0F87604709'];
   WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
   // Next 3 lines control the possible orientations
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+
+  RequestConfiguration requestConfiguration =
+      RequestConfiguration(testDeviceIds: devices);
+  MobileAds.instance.updateRequestConfiguration(requestConfiguration);
 
   runApp(const MyApp());
 }

@@ -13,8 +13,8 @@ class Client {
   int priceUnit = 0;
   double finalPrice = 0;
   bool isLaunched = false;
-  double? latitude;
-  double? longitude;
+  // double? latitude;
+  // double? longitude;
   int secondsCounter = 0;
   Timer? timer;
 

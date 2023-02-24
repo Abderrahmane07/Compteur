@@ -11,9 +11,9 @@ import 'dart:async';
 enum Cities { Casablanca, Tangier, Rabat, Fez, Tetouan, Custom }
 
 class City {
-  double? intialPriceCity;
+  double intialPriceCity;
   int distanceToChange;
-  double? chute;
+  double chute;
   int earthDiameter = 12741744; // with meters in Tangier
 
   City(this.intialPriceCity, this.distanceToChange, this.chute,

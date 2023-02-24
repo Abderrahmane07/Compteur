@@ -7,6 +7,7 @@ import 'package:compeur/screen_of_compteur.dart';
 // import 'package:compeur/tests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 // import 'package:segment_display/segment_display.dart';
 import 'dart:math' show cos, sqrt, asin;
 
@@ -20,53 +21,72 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // This part will be only for ads
+  @override
+  void initState() {
+    super.initState();
+    initBannerAd();
+  }
+
+  late BannerAd bannerAd;
+  var adUnit = "ca-app-pub-3940256099942544/6300978111"; // testing ad id
+  bool isAdLoaded = false;
+
+  initBannerAd() {
+    bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: adUnit,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          print(error);
+        },
+      ),
+      request: const AdRequest(),
+    );
+
+    bannerAd.load();
+  }
+
+  // It ends here
+
   City tangier = City(1.6, 100, 0.3, 12741744);
   City casablanca = City(2.0, 80, 0.2, 12743254);
   Client client1 = Client();
   Client client2 = Client();
   Client client3 = Client();
   int clientOrder = 1;
-  List<int> priceForClientsList = [0, 1, 2];
   List<double> finalPriceForClientsList = [0, 0, 0];
-  double chute =
-      0.20; // Tarif à payer par minute écoulée ou par unité de disatnce traversée
+  //double chute = 0.20; // Tarif à payer par minute écoulée ou par unité de disatnce traversée
   bool isNightTarriff = false;
   bool isOn = true;
   List<bool> isLaunchedList = [false, false, false];
-  // var locationMessage = '';
 
   Future<List<double?>> getCurrentLocation() async {
     var position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
-    // var lastPosition = await Geolocator.getLastKnownPosition();
     double? lat = position.latitude;
     double? lon = position.longitude;
     return [lat, lon];
-    // print(lastPosition);
-    // setState(() {
-    //   // locationMessage = "${position.latitude} , ${position.longitude}";
-
-    // });
   }
 
   // Now we are going to try to implement the possibility of getting the price also by position and the travelled distance
   Future<void> priceByDistance(Client client) async {
     client.list2 = await getCurrentLocation();
     setState(() {
-      // print('La distance parcourue par le client ' +
-      //     clientOrder.toString() +
-      //     ' est ' +
-      //     client.distance.toStringAsFixed(2) +
-      //     'm sur une durée de ' +
-      //     client.secondsCounter.toString() +
-      //     ' secondes');
       client.distance += calculateDistance(
           client.list1[0], client.list1[1], client.list2[0], client.list2[1]);
       client.list1 = client.list2;
-      if (client.distance > (tangier.distanceToChange / 10 * client.i)) {
-        priceForClientsList[0]++;
+      print(client.distance);
+      if (client.distance > (tangier.distanceToChange * client.i)) {
         client.priceUnit++;
-        client.i++;
+        print('upgrade using the distance');
+        //  client.i++;
       }
     });
   }
@@ -88,6 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _startOrResetCountDownGeneral(
       Client client, int clientOrder) async {
     client.isLaunched = !client.isLaunched;
+    client.finalPrice = tangier.intialPriceCity;
+    finalPriceForClientsList[clientOrder - 1] = tangier.intialPriceCity;
     client.list1 = await getCurrentLocation();
     Timer.periodic(Duration(seconds: 1), (timer) {
       client.secondsCounter++;
@@ -97,9 +119,15 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (client.isLaunched) {
         setState(() {
-          client.priceUnit++;
-          client.finalPrice = chute * client.priceUnit;
-          finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
+          //client.finalPrice =
+          //  tangier.intialPriceCity + (tangier.chute * client.priceUnit);
+          if (client.secondsCounter % 60 == 0) {
+            client.priceUnit++;
+            //print('This is the unitPrice' + client.priceUnit.toString());
+            client.finalPrice =
+                tangier.intialPriceCity + tangier.chute * client.priceUnit;
+            finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
+          }
         });
       } else {
         setState(() {
@@ -107,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
           client.i = 0;
           client.distance = 0;
           client.priceUnit = 0;
+          client.finalPrice = 0;
           finalPriceForClientsList[clientOrder - 1] = 0;
           client.isLaunched = false;
         });
@@ -128,8 +157,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void switchOnOff() {
     setState(() {
-      isLaunchedList = [false, false, false];
-      priceForClientsList = [0, 1, 2];
+      client1.isLaunched = false;
+      client2.isLaunched = false;
+      client3.isLaunched = false;
+      client1.priceUnit = 0;
+      client2.priceUnit = 0;
+      client3.priceUnit = 0;
       clientOrder = 1;
       if (isNightTarriff) {
         switchToNightTarriff();
@@ -141,7 +174,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void switchToNightTarriff() {
     setState(() {
       isNightTarriff = !isNightTarriff;
-      isNightTarriff ? chute = 0.3 : chute = 0.2;
+      isNightTarriff
+          ? tangier.chute = tangier.chute * 1.5
+          : tangier.chute = tangier.chute;
     });
   }
 
@@ -171,14 +206,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           // Button 1
                           ButtonToImplemet().buttonToReturn(
                               const Color.fromARGB(255, 48, 182, 97),
-                              onPressedButton),
+                              onPressedButton,
+                              'Start / Reset'),
                           const SizedBox(
                             width: 30,
                           ),
                           // Button 2
                           ButtonToImplemet().buttonToReturn(
                               const Color.fromARGB(255, 208, 183, 153),
-                              nextClient),
+                              nextClient,
+                              'Change Client'),
                         ],
                       ),
                       const SizedBox(
@@ -189,14 +226,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           // Button 3
                           ButtonToImplemet().buttonToReturn(
                               const Color.fromARGB(255, 208, 183, 153),
-                              switchOnOff),
+                              switchOnOff,
+                              'Turn On / Off'),
                           const SizedBox(
                             width: 30,
                           ),
                           // Button 4
                           ButtonToImplemet().buttonToReturn(
                               const Color.fromARGB(255, 208, 183, 153),
-                              switchToNightTarriff),
+                              switchToNightTarriff,
+                              'Night Tarriff'),
                         ],
                       ),
                     ],
@@ -210,55 +249,90 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const SizedBox(
-                height: 40,
+                height: 20,
               ),
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    height: 10,
-                    width: 240,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 48, 132, 112),
+              Container(
+                height: 55,
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 20,
                     ),
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  const Text(
-                    "LARCHI",
-                    style: TextStyle(
-                      fontSize: 40,
-                      color: Color.fromARGB(255, 48, 132, 112),
-                      letterSpacing: 6,
+                    Container(
+                      height: 10,
+                      width: 240,
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 48, 132, 112),
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  Container(
-                    height: 10,
-                    width: 197,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 48, 132, 112),
+                    const SizedBox(
+                      width: 15,
                     ),
-                  ),
-                ],
+                    const Text(
+                      "LARCHI",
+                      style: TextStyle(
+                        fontSize: 40,
+                        color: Color.fromARGB(255, 48, 132, 112),
+                        letterSpacing: 6,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 10,
+                          width: 197,
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 48, 132, 112),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 1,
+                        ),
+                        const Text(
+                          "MADE IN TANGIER",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            //letterSpacing: 6,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
           Expanded(child: Container()),
           // bloc 3: ad
-          SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: 70,
-            child: const DecoratedBox(
-              decoration:
-                  BoxDecoration(color: Color.fromARGB(255, 153, 153, 153)),
-            ),
-          ),
+          isAdLoaded
+              // ? SizedBox(
+              //     height: bannerAd.size.width.toDouble(),
+              //     width: bannerAd.size.height.toDouble(),
+              //     child: AdWidget(
+              //       ad: bannerAd,
+              //     ),
+              //   )
+              ? SizedBox(
+                  height: 400,
+                  width: 150,
+                  child: AdWidget(
+                    ad: bannerAd,
+                  ),
+                )
+              : SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: 70,
+                  child: const DecoratedBox(
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 153, 153, 153)),
+                  ),
+                ),
         ],
       ),
     );
