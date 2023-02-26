@@ -126,7 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           //client.finalPrice =
           //  tangier.intialPriceCity + (tangier.chute * client.priceUnit);
-          if (client.secondsCounter % 4 == 0) {
+          // Change the price of the ride evey x seconds
+          if (client.secondsCounter % 6 == 0) {
             client.priceUnit++;
             //print('This is the unitPrice' + client.priceUnit.toString());
 
@@ -321,9 +322,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: DropdownButton<City>(
                 items: [
                   DropdownMenuItem<City>(
-                      child: Text("Tangier"), value: tangier),
+                      value: tangier, child: const Text("Tangier")),
                   DropdownMenuItem<City>(
-                      child: Text("Casa"), value: casablanca),
+                      value: casablanca, child: const Text("Casa")),
                   //DropdownMenuItem<City>(child: Text("Rabat"), value: tangier),
                 ],
                 value: city,

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "compeur" "\0"
+            VALUE "FileDescription", "Compteur Taxi" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "compeur" "\0"
+            VALUE "InternalName", "Compteur Taxi" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2022 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "compeur.exe" "\0"
-            VALUE "ProductName", "compeur" "\0"
+            VALUE "ProductName", "Compteur Taxi" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
