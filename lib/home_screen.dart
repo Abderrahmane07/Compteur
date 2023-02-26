@@ -29,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   late BannerAd bannerAd;
-  var adUnit =
-      "ca-app-pub-3940256099942544/6300978111"; // testing ad id // The real one is ca-app-pub-7524555526929904/4951964227
+  var adUnit = "ca-app-pub-7524555526929904/4951964227";
+  // testing one "ca-app-pub-3940256099942544/6300978111"; // testing ad id // The real one is ca-app-pub-7524555526929904/4951964227
   bool isAdLoaded = false;
 
   initBannerAd() {
@@ -209,9 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           // Button 1
                           ButtonToImplemet().buttonToReturn(
-                              const Color.fromARGB(255, 48, 182, 97),
-                              onPressedButton,
-                              'Start / Reset'),
+                            const Color.fromARGB(255, 48, 182, 97),
+                            onPressedButton,
+                            'Start / Reset',
+                            true,
+                          ),
                           const SizedBox(
                             width: 30,
                           ),
