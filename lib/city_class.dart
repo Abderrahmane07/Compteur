@@ -6,8 +6,6 @@
 
 // ignore_for_file: constant_identifier_names
 
-import 'dart:async';
-
 enum Cities { Casablanca, Tangier, Rabat, Fez, Tetouan, Custom }
 
 class City {
@@ -18,6 +16,4 @@ class City {
 
   City(this.intialPriceCity, this.distanceToChange, this.chute,
       this.earthDiameter);
-
-  // Client();
 }

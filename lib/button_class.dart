@@ -23,14 +23,14 @@ class ButtonToImplemet {
                   await Permission.location.request();
 
               if (locationStatus == PermissionStatus.granted) {
-                print("Already has the permission");
+                // print("Already has the permission");
                 fofo();
               }
               if (locationStatus == PermissionStatus.denied) {
-                print("no, you're denied");
+                // print("no, you're denied");
               }
               if (locationStatus == PermissionStatus.permanentlyDenied) {
-                print("Permanently denied");
+                // print("Permanently denied");
                 openAppSettings();
               }
             } else {

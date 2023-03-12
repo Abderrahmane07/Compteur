@@ -3,12 +3,9 @@ import 'dart:async';
 import 'package:compeur/button_class.dart';
 import 'package:compeur/client_class.dart';
 import 'package:compeur/screen_of_compteur.dart';
-// import 'package:compeur/test_location_screen.dart';
-// import 'package:compeur/tests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-// import 'package:segment_display/segment_display.dart';
 import 'dart:math' show cos, sqrt, asin;
 
 import 'city_class.dart';
@@ -30,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late BannerAd bannerAd;
   var adUnit = "ca-app-pub-7524555526929904/4951964227";
-  // testing one "ca-app-pub-3940256099942544/6300978111"; // testing ad id // The real one is ca-app-pub-7524555526929904/4951964227
+  // ad id: testing one "ca-app-pub-3940256099942544/6300978111"; // The real one is ca-app-pub-7524555526929904/4951964227
   bool isAdLoaded = false;
 
   initBannerAd() {
@@ -45,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
+          // ignore: avoid_print
           print(error);
         },
       ),
@@ -85,10 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
       client.distance += calculateDistance(
           client.list1[0], client.list1[1], client.list2[0], client.list2[1]);
       client.list1 = client.list2;
-      print(client.distance);
+      // print(client.distance);
       if (client.distance > (city.distanceToChange * client.i)) {
         client.priceUnit++;
-        print('upgrade using the distance');
+        // print('upgrade using the distance');
         client.i++;
       }
     });
@@ -114,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
     client.finalPrice = city.intialPriceCity;
     finalPriceForClientsList[clientOrder - 1] = city.intialPriceCity;
     client.list1 = await getCurrentLocation();
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       client.secondsCounter++;
       client.finalPrice = city.intialPriceCity + city.chute * client.priceUnit;
       finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
@@ -124,16 +122,9 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (client.isLaunched) {
         setState(() {
-          //client.finalPrice =
-          //  tangier.intialPriceCity + (tangier.chute * client.priceUnit);
           // Change the price of the ride evey x seconds
-          if (client.secondsCounter % 6 == 0) {
+          if (client.secondsCounter % 60 == 0) {
             client.priceUnit++;
-            //print('This is the unitPrice' + client.priceUnit.toString());
-
-            // client.finalPrice =
-            //     city.intialPriceCity + city.chute * client.priceUnit;
-            // finalPriceForClientsList[clientOrder - 1] = client.finalPrice;
           }
         });
       } else {
@@ -258,6 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 20,
               ),
+              // ignore: sized_box_for_whitespace
               Container(
                 height: 55,
                 child: Row(

@@ -1,4 +1,3 @@
-import 'package:compeur/tests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -30,13 +29,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-          // scaffoldBackgroundColor: const Color.fromARGB(255, 67, 61, 61),
-          ),
-      // home: const MyHomePage(),
       routes: {
         '/': (context) => HomeScreen(),
-        '/tests': (context) => const TestsScreen(),
       },
     );
   }
